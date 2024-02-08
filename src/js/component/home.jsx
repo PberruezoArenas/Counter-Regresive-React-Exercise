@@ -10,7 +10,7 @@ const Home = () => {
 
   const handleCountdownChange = (event) => {
     const newValue = event.target.value;
-
+  
     if (newValue === "") {
       setCountdownValue(1);
       setInputValue("");
@@ -36,7 +36,11 @@ const Home = () => {
 
   const handleAlertNumberChange = (event) => {
     const newAlertNumber = event.target.value;
-    setNewAlertNumber(newAlertNumber);
+  
+    // Limitar a números y máximo 6 dígitos
+    if (/^\d{0,6}$/.test(newAlertNumber)) {
+      setNewAlertNumber(newAlertNumber);
+    }
   };
 
   const applyAlertNumberChange = () => {
@@ -56,6 +60,8 @@ const Home = () => {
           if (prevCountdown > 0 && inputValue !== "") {
             return prevCountdown - 1;
           } else {
+            // Reiniciar el input si llega a 0
+            setInputValue("");
             return prevCountdown + 1;
           }
         });
@@ -95,4 +101,3 @@ const Home = () => {
 };
 
 export default Home;
-
