@@ -1,15 +1,16 @@
-// Componente home.jsx
 import React, { useState, useEffect } from "react";
 import Counter from "./counter.jsx";
 
 const Home = () => {
   const [countdownValue, setCountdownValue] = useState(1);
   const [inputValue, setInputValue] = useState("");
+  const [isPaused, setIsPaused] = useState(false);
+  const [alertNumber, setAlertNumber] = useState("");
+  const [newAlertNumber, setNewAlertNumber] = useState("");
 
   const handleCountdownChange = (event) => {
     const newValue = event.target.value;
 
-    // Permitimos que el input esté vacío para reiniciar el contador hacia adelante
     if (newValue === "") {
       setCountdownValue(1);
       setInputValue("");
@@ -19,21 +20,50 @@ const Home = () => {
     }
   };
 
+  const handlePause = () => {
+    setIsPaused(true);
+  };
+
+  const handleResume = () => {
+    setIsPaused(false);
+  };
+
+  const handleRestart = () => {
+    setIsPaused(false);
+    setCountdownValue(1);
+    setInputValue("");
+  };
+
+  const handleAlertNumberChange = (event) => {
+    const newAlertNumber = event.target.value;
+    setNewAlertNumber(newAlertNumber);
+  };
+
+  const applyAlertNumberChange = () => {
+    setAlertNumber(newAlertNumber);
+  };
+
   useEffect(() => {
     let intervalId;
 
-    if (countdownValue > 0 && inputValue !== "") {
+    if (!isPaused) {
       intervalId = setInterval(() => {
-        setCountdownValue((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-    } else {
-      intervalId = setInterval(() => {
-        setCountdownValue((prevCountdown) => prevCountdown + 1);
+        setCountdownValue((prevCountdown) => {
+          if (prevCountdown === parseInt(alertNumber, 10)) {
+            alert(`¡El contador alcanzó ${alertNumber}!`);
+          }
+
+          if (prevCountdown > 0 && inputValue !== "") {
+            return prevCountdown - 1;
+          } else {
+            return prevCountdown + 1;
+          }
+        });
       }, 1000);
     }
 
     return () => clearInterval(intervalId);
-  }, [countdownValue, inputValue]);
+  }, [isPaused, inputValue, alertNumber]);
 
   return (
     <div className="text-center">
@@ -46,8 +76,23 @@ const Home = () => {
       <h1>
         <Counter countdownValue={countdownValue} />
       </h1>
+      <button onClick={handlePause}>Pausar</button>
+      <button onClick={handleResume}>Reanudar</button>
+      <button onClick={handleRestart}>Reiniciar</button>
+
+      <div>
+        <label>Establecer número de alerta:</label>
+        <input
+          type="text"
+          placeholder="Número de alerta"
+          value={newAlertNumber}
+          onChange={handleAlertNumberChange}
+        />
+        <button onClick={applyAlertNumberChange}>Aplicar Cambio</button>
+      </div>
     </div>
   );
 };
 
 export default Home;
+
